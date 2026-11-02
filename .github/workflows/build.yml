@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Check server syntax
+        run: |
+          for f in server/*.js server/ipc/*.js; do node --check "$f"; done
+
+      - name: Smoke-test server
+        run: |
+          node server/index.js &
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:3210/ >/dev/null && break; sleep 1; done
+          curl -sf -X POST -H 'Content-Type: application/json' -d '{"args":[]}' \
+            http://127.0.0.1:3210/api/invoke/get-app-version
