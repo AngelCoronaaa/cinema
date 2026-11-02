@@ -103,7 +103,9 @@ let hianimePort = null;
 // server, so these are the administrator's: when set they always win, and the
 // browser can't overwrite them.
 const ENV_SECRETS = {
-  apikey: (process.env.TMDB_TOKEN || "").trim(),
+  // Fallback token baked into the code so the setup screen never shows up.
+  // KEEP THIS REPOSITORY PRIVATE.
+  apikey: (process.env.TMDB_TOKEN || "").trim() || "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzZjQxMmE3Yjg5NzNkNWMwNzBkNjY5NGUyZDg2Mzg4ZiIsIm5iZiI6MTc5MzU4NjU5Ni41Miwic3ViIjoiNmFlN2Y1YTQxYWQ0M2MwZTIwMDgyOTc3Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.EWugZsRy4olwKI0Td7lWlade9W2JX8ZRrK497z-zI3Y",
   wyzieApiKey: (process.env.WYZIE_API_KEY || "").trim(),
   subdlApiKey: (process.env.SUBDL_API_KEY || "").trim(),
 };
