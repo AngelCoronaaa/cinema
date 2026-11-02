@@ -5,6 +5,7 @@ COPY package*.json ./
 RUN npm ci --legacy-peer-deps && npm install react-is --legacy-peer-deps
 
 COPY . .
+RUN sed -i 's/sandbox={.${base} allow-presentation allow-pointer-lock.}/sandbox={undefined}/' src/components/WebView.jsx
 RUN npm run build
 RUN sed -i "s/if (isLoopbackBind) return null;/return null;/" server/index.js
 
