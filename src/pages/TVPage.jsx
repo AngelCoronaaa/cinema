@@ -2024,7 +2024,7 @@ export default function TVPage({
                         ? resolvedPlayerUrl || "about:blank"
                         : playerDirectUrl || "about:blank"
                   }
-                  sandbox={playerSource === "vidrift" ? false : "allow-scripts allow-same-origin allow-forms"}
+                  sandbox={false}
                   style={{
                     position: "absolute",
                     inset: 0,
