@@ -107,12 +107,19 @@ const WebView = forwardRef(function WebView({ sandbox, ...props }, ref) {
 
   // Without allow-popups / allow-top-navigation the embed can't open ad popups
   // or redirect the app.
+  // `sandbox={false}` renders the iframe with no sandbox at all: some embeds
+  // (Vidrift) detect the attribute and refuse to play ("Remove sandboxing…").
+  const unsandboxed = sandbox === false;
   const base = sandbox || "allow-scripts allow-same-origin allow-forms";
   return (
     <iframe
+      // The sandbox attribute only applies on load, so remount when it toggles.
+      key={unsandboxed ? "open" : "sandboxed"}
       ref={setRef}
       title="Player"
-      sandbox={`${base} allow-presentation allow-pointer-lock`}
+      sandbox={
+        unsandboxed ? undefined : `${base} allow-presentation allow-pointer-lock`
+      }
       allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
       allowFullScreen
       referrerPolicy="origin"

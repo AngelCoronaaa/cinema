@@ -229,18 +229,27 @@ export default function PlayerLangControls({ frameRef, active, originalLang, tit
       }`
     : "Audio & Subtitles";
 
+  // Send a change, reflect it in the UI right away (the player may not push a
+  // new state), then re-query a few times to confirm what it actually applied.
+  const applyChange = (change) => {
+    post({ type: "vidrift:set", ...change });
+    setState((prev) => (prev ? { ...prev, ...change } : prev));
+    for (const ms of [400, 1200, 2500]) {
+      setTimeout(() => post({ type: "vidrift:get-state" }), ms);
+    }
+  };
   const chooseAudio = (a) => {
     setAudioPref(a.lang);
     storage.set(STORAGE_KEYS.PLAYER_AUDIO_LANG, a.lang);
-    if (!a.single) post({ type: "vidrift:set", audio: a.value });
+    if (!a.single) applyChange({ audio: a.value });
   };
   const chooseSub = (s) => {
     const lang = s ? s.lang : "off";
     setSubPref(lang);
     storage.set(STORAGE_KEYS.PLAYER_SUB_LANG, lang);
-    post({ type: "vidrift:set", subtitle: s ? s.value : opts.offValue });
+    applyChange({ subtitle: s ? s.value : opts.offValue });
   };
-  const chooseQuality = (q) => post({ type: "vidrift:set", quality: q.value });
+  const chooseQuality = (q) => applyChange({ quality: q.value });
 
   return (
     <div className="lang-ctl" ref={wrapRef}>
@@ -328,6 +337,9 @@ export default function PlayerLangControls({ frameRef, active, originalLang, tit
                   ))}
                 </>
               )}
+              <div className="lang-ctl__note">
+                ¿Se abren anuncios al hacer clic? Instala uBlock Origin o usa el navegador Brave.
+              </div>
             </>
           )}
         </div>
