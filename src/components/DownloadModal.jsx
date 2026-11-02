@@ -239,6 +239,7 @@ export default function DownloadModal({
           <section className="dl-sheet__section">
             <div className="dl-sheet__row">
               <h3 className="dl-sheet__label">Find subtitles</h3>
+              {canSearch && (
               <div className="segmented" role="radiogroup" aria-label="Subtitle language">
                 {SUBTITLE_LANGUAGES.map((l) => (
                   <button
@@ -253,6 +254,7 @@ export default function DownloadModal({
                   </button>
                 ))}
               </div>
+              )}
             </div>
 
             {keys && !canSearch ? (

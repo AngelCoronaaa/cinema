@@ -13,10 +13,10 @@ A web app to stream and download any Movie, TV Series or Anime. It runs as a sma
 ## Why Streambert?
 - 🎦 **Streaming:** Stream any Movie, Anime or TV Series from around the World.
 - 🌎 **Spanish & English:** Audio and subtitle picker limited to Latin American Spanish and English.
-- 📥 **Downloading:** Download episodes to the server and watch them in the browser.
+- 📥 **Downloading:** Save episodes as MP4 straight to your own device (phone, tablet or computer), plus subtitles as SRT.
 - 📃 **Subtitles:** Download and manage Spanish and English subtitles.
 - 🪟 **Liquid Glass design:** Light and dark appearance that follows your system.
-- 📚 **Library:** Track what you watched, save stuff you want to watch and manage your Downloads.
+- 📚 **Library:** Track what you watched and save stuff you want to watch.
 - ✨ **Trending:** Discover new things to Watch every Day.
 - 🗂️ **Movies, Series & Anime:** Separate sections with trending, popular and top-rated rows plus genre filters.
 - 📱 **Any screen:** Responsive layout for phones (bottom tab bar), tablets, desktops and large screens.
@@ -43,8 +43,9 @@ With the default source (Vidrift), Streambert replaces the player's own language
 ---
 
 ## Downloading
-Downloads run on the server with [this Program](https://github.com/truelockmc/vid-dl-cli-only) and are saved in a folder on the server. Finished files play in the browser (`/watch`), with their subtitles. <br></br>
-Downloads need the stream's `.m3u8` link, which the server gets for Anime (HiAnime). Third-party players run on other websites, so the browser can't read their stream links.
+Downloads are saved on the device of whoever presses **Download**, like any other browser download. The server reads the stream (HLS), remuxes it to MP4 on the fly with [mux.js](https://github.com/videojs/mux.js) and sends it to the browser: nothing is stored on the server and no extra software (ffmpeg, downloaders) is needed. Subtitles are delivered as `.srt` files.
+
+Downloads need the stream's playlist, which the server gets for Anime (HiAnime). Third-party players run on other websites, so the browser can't read their streams.
 
 ---
 
@@ -56,7 +57,6 @@ Anime streams are resolved on the server from HiAnime (the method comes from [an
 
 - [Node.js](https://nodejs.org/) 22.12 or newer
 - A free TMDB API Read Access Token ([Guide on how to get one](tmdb-tutorial.md))
-- For downloading: [this Program](https://github.com/truelockmc/vid-dl-cli-only/releases/latest) and [ffmpeg](https://ffmpeg.org/download.html) on the server machine
 
 ---
 ## Installation
@@ -87,7 +87,7 @@ Streambert is meant to be shared by several people, so everything that affects a
 | `PORT` | `3210` | Port to listen on |
 | `HOST` | `127.0.0.1` | `0.0.0.0` makes it reachable from your network |
 | `STREAMBERT_TOKEN` | auto | Access token. Required whenever `HOST` is not a loopback address; generated on first start, saved in the data folder and printed in the console URL |
-| `STREAMBERT_DATA_DIR` | `~/.streambert-web` | Where keys and the downloads list are stored |
+| `STREAMBERT_DATA_DIR` | `~/.streambert-web` | Where server-side keys are stored |
 
 ### Updating
 ```bash
@@ -95,8 +95,6 @@ git pull && npm install && npm run web
 ```
 
 ### Notes
-- "Open in VLC/mpv" acts on the machine running the server.
-- Some downloaded formats (e.g. `.mkv` with certain codecs) may not play in every browser; the player page offers a download link for those.
 - Watch progress is tracked automatically for players the browser can inspect (HiAnime). For other sources use the progress buttons below the player.
 
 ---
@@ -153,13 +151,12 @@ Project Root
 │   ├── apple-touch-icon.png
 │   └── logo.svg
 ├── server                  # Node.js backend
-│   ├── index.js            # HTTP server, API routes, static files, media streaming
+│   ├── index.js            # HTTP server, API routes, static files
 │   ├── runtime.js          # paths, channel registry, server → browser events
 │   └── ipc
-│       ├── downloads.js    # download queue, local library scan
+│       ├── export.js       # downloads to the user's device (HLS → MP4, SRT)
 │       ├── hianime.js      # anime resolver + local HLS player
-│       ├── player.js       # VLC/mpv launcher, ffprobe duration
-│       ├── storage.js      # secret store, scheduled backups
+│       ├── storage.js      # secret store
 │       └── subtitles.js    # subtitle search & download
 ├── screenshots
 └── src                     # React app
